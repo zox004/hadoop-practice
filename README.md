@@ -178,4 +178,47 @@ ssh test@Slave1
 ssh test@Slave2
 ```
 
+## Apache Hadoop
+- Large clusters of computers를 통해 Large Datasets를 distributed processing하기 위한 Software Framework
+- Map-Reduce라는 데이터 처리 모델을 기반으로 한다
+
+### Architecture
+- Multi-Layer 구조
+  - MapReduce Layer
+    - Job Tracker : 사용자로부터 Job을 요청 받고 Task Tracker에 작업 할당
+    - Task Tracker : Job Tracker로부터 할당 받은 작업을 Map-Reduce하여 결과 반환
+  - HDFS Layer
+    - Name Node : 작업을 해야 하는 파일을 Block으로 나누어 Data Node에 전달
+    - Data Node : 전달받은 파일의 읽기/쓰기 등을 실제로 수행
+
+- Master-Slave 구조
+  - Master Node(Single Node)
+    - Name Node
+    - Data Node
+    - Job Tracker
+    - Task Tracker
+  - Slave Node
+    - Data Node
+    - Task Tracker
+
+![image](https://user-images.githubusercontent.com/56228085/169651996-2105575f-cac9-4f61-b04c-798b56f31045.png)
+
+## Hadoop Cluster Configuration
+- Move to Hadoop settings directory on Master Machine
+```bash
+cd /home/hadoop-3.3.0/etc/hadoop
+```
+- Edit slaves file : Slaves 등록
+```bash
+sudo vi workers
+Add Slave1
+Add Slave2
+```
+
+- Edit core-site.xml file : NameNode 위치 설정
+```bash
+sudo vi core-site.xml
+```
+
+
 
