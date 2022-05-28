@@ -1,0 +1,53 @@
+import java.io.*;
+import java.util.*;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.mapreduce.lib.input.*;
+import org.apache.hadoop.mapreduce.lib.output.*;
+
+
+
+public class MyWordCount{
+        public static class MyMapper
+                extends Mapper<Object, Text, Text, IntWritable>{
+
+                private final static IntWritable one = new IntWritable(1);
+
+                private Text word = new Text();
+
+                public void map(Object key, Text value, Context context)
+                        throws IOException, InterruptedException{
+                        String line = value.toString();
+                        String match = "[^\uAC00-\uD7A3xfea-zA-Z\\s]";  //upper -> lower
+                        line = line.replaceAll(match, "");
+                        StringTokenizer st = new StringTokenizer(line);
+                        while(st.hasMoreTokens()){
+                                word.set(st.nextToken().toLowerCase());
+                                context.write(word, one);
+                        }
+                }
+        }
+
+        public static class MyReducer
+                extends Reducer<Text, IntWritable, Text, IntWritable>{
+
+                private IntWritable sumWritable = new IntWritable();
+
+                protected void reduce(Text key, Iterable<IntWritable> values,
+                        Context context)
+                        throws IOException, InterruptedException{
+
+                        int sum = 0;
+                        for(IntWritable val : values){
+                                sum += val.get();
+                        }
+                        sumWritable.set(sum);
+                        context.write(key, sumWritable);
+                }
+        }
+
+        public static void main(String[] args) throws Exception{
+                Configuration conf = new Configuration();
+                Job job = Job.getInstance(conf, "WordCount");
