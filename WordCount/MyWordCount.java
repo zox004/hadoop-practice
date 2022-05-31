@@ -51,3 +51,22 @@ public class MyWordCount{
         public static void main(String[] args) throws Exception{
                 Configuration conf = new Configuration();
                 Job job = Job.getInstance(conf, "WordCount");
+
+                job.setJarByClass(MyWordCount.class);
+                job.setMapperClass(MyMapper.class);
+                job.setReducerClass(MyReducer.class);
+
+                job.setOutputKeyClass(Text.class);
+                job.setOutputValueClass(IntWritable.class);
+
+                job.setInputFormatClass(TextInputFormat.class);
+
+                job.setOutputFormatClass(TextOutputFormat.class);
+
+                FileInputFormat.addInputPath(job, new Path(args[0]));
+                FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+                job.waitForCompletion(true);
+        }
+}
+            
